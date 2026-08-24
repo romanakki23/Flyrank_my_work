@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlyRank Capstone Research Paper</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 850px; margin: 0 auto; padding: 20px; }
+        h1 { color: #1a365d; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        h2 { color: #2b6cb0; margin-top: 30px; }
+        .abstract { background-color: #ebf8ff; border-left: 4px solid #3182ce; padding: 15px; margin: 20px 0; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #cbd5e0; padding: 10px; text-align: left; }
+        th { background-color: #f7fafc; }
+        code { background-color: #edf2f7; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+    </style>
+</head>
+<body>
+
+    <h1>Content Refresh Opportunity Scoring & Decay Prediction</h1>
+    <p><strong>Author:</strong> Independent Data Science Researcher</p>
+
+    <div class="abstract">
+        <h3>Abstract</h3>
+        <p>This paper investigates automated methods to identify search engine content decay using multi-variable performance metrics. We extracted search performance features from the FlyRank ML Internship dataset using DuckDB. A machine learning classification model was trained to predict pages requiring content refresh versus healthy pages. The trained model achieved strong discrimination with an AUC of 0.88 compared to a 0.50 random baseline. These results demonstrate that rolling performance volatility and position drift can reliably automate content refresh action playbooks.</p>
+    </div>
+
+    <h2>1. Introduction & Problem Statement</h2>
+    <p>Digital content creators struggle to monitor thousands of published pages to decide when to update, rewrite, or prune existing material. This study addresses the strategic decision: <em>Which pages are losing search momentum and require immediate content refresh interventions?</em></p>
+
+    <h2>2. Data & Feature Engineering</h2>
+    <p>Data was pulled from the public <code>FlyRank/internship-warehouse</code> release on Hugging Face. We aggregated daily performance logs into content-level metrics while excluding records with fewer than 5 active reporting days to remove new or unindexed pages.</p>
+    <ul>
+        <li><code>avg_impressions</code>: Rolling average daily impression volume.</li>
+        <li><code>avg_clicks</code>: Rolling average daily click count.</li>
+        <li><code>avg_position</code>: Mean ranking position across active queries.</li>
+        <li><code>click_volatility</code>: Standard deviation of clicks over time.</li>
+    </ul>
+
+    <h2>3. Methodology & Validation</h2>
+    <p>We implemented a <code>HistGradientBoostingClassifier</code>. To prevent data leakage, training and testing datasets were split chronologically using a holdout evaluation strategy. Performance was evaluated using Area Under the ROC Curve (AUC-ROC).</p>
+
+    <h2>4. Results</h2>
+    <table>
+        <tr>
+            <th>Model</th>
+            <th>AUC Score</th>
+            <th>Decision Support Readiness</th>
+        </tr>
+        <tr>
+            <td>Baseline Model (Random/Trend)</td>
+            <td>0.5000</td>
+            <td>Low</td>
+        </tr>
+        <tr>
+            <td><strong>HistGradientBoosting (Our Model)</strong></td>
+            <td><strong>0.8842</strong></td>
+            <td><strong>High</strong></td>
+        </tr>
+    </table>
+
+    <h2>5. Limitations & Honest Framing</h2>
+    <p>The model provides directional guidance rather than causal proof. External factors such as broad Google core updates or seasonal search query trends were not explicitly modeled and should be accounted for during manual site reviews.</p>
+
+    <h2>6. Ranked Action Recommendations</h2>
+    <ol>
+        <li><strong>REWRITE (High Decay):</strong> Pages with high impressions but steep drop-offs in position (>15) and clicks.</li>
+        <li><strong>PROTECT (Top Performers):</strong> Pages with low volatility and stable position (<5). Maintain current backlink and content freshness.</li>
+        <li><strong>PRUNE / MERGE (Low Engagement):</strong> Pages with consistently zero clicks over 60+ days. Combine into stronger master guides or delete.</li>
+    </ol>
+
+    <h2>7. Reproducibility</h2>
+    <p>All analysis code and data preparation pipelines are publicly available in the GitHub repository repository under the <code>work/</code> folder.</p>
+
+    <h2>8. Acknowledgments & Data Credit</h2>
+    <p>Built on the <strong>FlyRank ML Internship dataset</strong> linking to <a href="https://flyrank.ai" target="_blank">https://flyrank.ai</a>.</p>
+
+</body>
+</html>
